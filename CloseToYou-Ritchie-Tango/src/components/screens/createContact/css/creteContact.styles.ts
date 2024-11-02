@@ -1,0 +1,116 @@
+import {StyleSheet} from 'react-native';
+
+export const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'flex-start',
+  },
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: 'flex-start',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '600',
+    marginBottom: 30,
+    color: '#000',
+    textAlign: 'left',
+  },
+  input: {
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    backgroundColor: '#fff',
+    fontSize: 16,
+  },
+  roleContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  roleButton: {
+    flex: 1,
+    padding: 15,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    alignItems: 'center',
+    marginHorizontal: 5,
+    backgroundColor: '#f9f9f9',
+  },
+  selectedRole: {
+    backgroundColor: '#e0e0e0',
+  },
+  roleText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'left',
+  },
+  buttonContainer: {
+    alignItems: 'center',
+    width: '100%',
+  },
+  imageContainer: {
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  imagePreview: {
+    width: 150,
+    height: 150,
+    borderRadius: 100,
+    gap: 10,
+    backgroundColor: '#63626c',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  modalContent: {
+    width: '80%',
+    paddingVertical: 20,
+    borderRadius: 10,
+    backgroundColor: 'white',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  closeModal: {
+    color: '#007BFF',
+    marginTop: 20,
+  },
+  map: {
+    height: 200,
+    marginHorizontal: -10,
+    borderRadius: 10,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 20,
+  },
+  butonImage: {
+    borderBottomWidth: 0.5,
+    borderTopWidth: 0.5,
+    borderColor: '#63626c',
+    width: '100%',
+    height: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    gap:10,
+  },
+});

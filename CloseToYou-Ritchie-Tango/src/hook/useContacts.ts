@@ -38,7 +38,7 @@ export const useContacts = () => {
       await AsyncStorage.setItem('contacts', JSON.stringify(defaultContacts));
       await AsyncStorage.setItem(
         'contId',
-        JSON.stringify(defaultContacts.length),
+        JSON.stringify(defaultContacts.length + 1),
       );
       setContacts(defaultContacts);
       setFilteredContacts(defaultContacts);
@@ -68,9 +68,9 @@ export const useContacts = () => {
       const contId = +JSON.parse(contIdStorage) + 1;
       const updatedContacts = [...contacts, {...contact, id: contId}];
       setContacts(updatedContacts);
-      console.log(updatedContacts);
       setFilteredContacts(updatedContacts);
       await AsyncStorage.setItem('contacts', JSON.stringify(updatedContacts));
+      await AsyncStorage.setItem('contId', JSON.stringify(contId));
     }
   };
 
@@ -78,7 +78,6 @@ export const useContacts = () => {
     const sections = filteredContacts.reduce((acc, contact) => {
       const firstLetter = contact.name[0].toUpperCase();
       const section = acc.find(sec => sec.title === firstLetter);
-
       if (section) {
         section.data.push(contact);
       } else {
@@ -86,16 +85,17 @@ export const useContacts = () => {
       }
       return acc;
     }, [] as {title: string; data: typeof contacts}[]);
-
     return sections.sort((a, b) => a.title.localeCompare(b.title));
   };
 
-  // Cargar contactos al montar el componente
+  const contactById = (id: number) => {
+    return contacts.find(contact => contact.id === id);
+  };
+
   useEffect(() => {
     loadContacts();
   }, [loadContacts]);
 
-  // Efecto para limpiar el timeout de búsqueda
   useEffect(() => {
     return () => {
       if (debounceTimeout) {
@@ -114,5 +114,6 @@ export const useContacts = () => {
     loadContacts,
     deleteContact,
     updateContact,
+    contactById,
   };
 };

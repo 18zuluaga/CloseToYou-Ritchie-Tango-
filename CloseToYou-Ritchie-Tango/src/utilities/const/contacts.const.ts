@@ -8,6 +8,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 43123241,
     email: 'juan@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 2,
@@ -15,6 +21,12 @@ export const defaultContacts: Contact[] = [
     role: role.Empleado,
     number: 43123241,
     email: 'maria@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 3,
@@ -22,6 +34,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 43123241,
     email: 'pepita@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 4,
@@ -29,6 +47,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 43123241,
     email: 'mama@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 5,
@@ -36,6 +60,12 @@ export const defaultContacts: Contact[] = [
     role: role.Empleado,
     number: 43123241,
     email: 'jose@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 6,
@@ -43,6 +73,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 43123241,
     email: 'daniel@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 7,
@@ -50,6 +86,12 @@ export const defaultContacts: Contact[] = [
     role: role.Empleado,
     number: 43123241,
     email: 'jeronimo@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 8,
@@ -57,6 +99,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 43123241,
     email: 'tomas@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 11,
@@ -64,6 +112,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 43123241,
     email: 'jacobo@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 10,
@@ -71,6 +125,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 43123241,
     email: 'angel@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 12,
@@ -78,6 +138,12 @@ export const defaultContacts: Contact[] = [
     role: role.Empleado,
     number: 4312,
     email: 'gilberto@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 13,
@@ -85,6 +151,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 12331243,
     email: 'Isaac@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 14,
@@ -92,6 +164,12 @@ export const defaultContacts: Contact[] = [
     role: role.Empleado,
     number: 314234,
     email: 'cristins@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 15,
@@ -99,6 +177,12 @@ export const defaultContacts: Contact[] = [
     role: role.Cliente,
     number: 123313,
     email: 'nicolas@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
   {
     id: 16,
@@ -106,5 +190,11 @@ export const defaultContacts: Contact[] = [
     role: role.Empleado,
     number: 12343143,
     email: 'alfonso@gmail.com',
+    address: {
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  },
   },
 ];

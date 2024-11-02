@@ -4,18 +4,22 @@ import {
   Text,
   TextInput,
   Button,
-  StyleSheet,
   TouchableOpacity,
-  ImageBackground,
   Image,
+  ScrollView,
+  Modal,
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {RootStackParamList} from '../../../navigation/navigation';
 import {useContacts} from '../../../hook/useContacts';
 import {Contact} from '../../../interface/contact.interface';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import  Icon  from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/Entypo';
+import MapView, {MapPressEvent, Marker, Region} from 'react-native-maps';
+import { styles } from './css/creteContact.styles';
+import { typePicture } from '../../../utilities/enum/typePicture.enum';
+import { selectImage } from '../../../utilities/selectImage.function';
+import { takePhoto } from '../../../utilities/takePhoto.function';
 
 export const CreateContactScreen: React.FC = () => {
   const {
@@ -26,9 +30,16 @@ export const CreateContactScreen: React.FC = () => {
   const {addContact} = useContacts();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [imageUri, setImageUri] = useState<string | undefined>();
+  const [location, setLocation] = useState<Region>({
+    latitude: 6.221591,
+    longitude: -75.560524,
+    latitudeDelta: 0.01,
+    longitudeDelta: 0.01,
+  });
+  const [modalVisible, setModalVisible] = useState(false);
 
   const onSubmit = (data: Contact) => {
-    addContact({...data, image: imageUri});
+    addContact({...data, image: imageUri, address: location});
     navigation.navigate('Home');
   };
 
@@ -36,49 +47,61 @@ export const CreateContactScreen: React.FC = () => {
     navigation.navigate('Home');
   };
 
-  const selectImage = () => {
-    launchImageLibrary({mediaType: 'photo'}, response => {
-      if (response.didCancel) {
-        console.log('Usuario canceló la selección de imagen.');
-      } else if (response.assets) {
-        setImageUri(response.assets[0].uri);
-      } else {
-        console.log('Error en la selección de imagen.');
-      }
-    });
-  };
-
-  const takePhoto = () => {
-    launchCamera({mediaType: 'photo'}, response => {
-      if (response.didCancel) {
-        console.log('Usuario canceló la captura de foto.');
-      } else if (response.assets) {
-        setImageUri(response.assets[0].uri);
-      } else {
-        console.log('Error al tomar la foto.');
-      }
-    });
+  const handleImage = (type : typePicture) => {
+    if (type === typePicture.selectImage){
+      selectImage((imageUris) => {
+        setImageUri(imageUris);
+      });
+    } else if (type === typePicture.takePhoto) {
+      takePhoto((imageUris) => {
+          setImageUri(imageUris);
+      });
+    }
+    setModalVisible(false);
   };
 
   return (
-    <ImageBackground
-      source={require('../../../../assets/rick-rothenberg-YTd1PtoUKlo-unsplash.jpg')}
-      style={styles.background}>
+    <ScrollView>
       <View style={styles.container}>
         <Text style={styles.title}>Agregar Contacto</Text>
 
         <View style={styles.imageContainer}>
           {imageUri ? (
-            <Image source={{uri: imageUri}} style={styles.imagePreview} />
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
+              <Image source={{uri: imageUri}} style={styles.imagePreview} />
+            </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.imagePreview}>
-              <Icon name="images" size={35}></Icon>
-              <Text style={{fontSize:15}}>Agregar imagen</Text>
+            <TouchableOpacity
+              onPress={() => setModalVisible(true)}
+              style={styles.imagePreview}>
+              <Icon name="images" color={'#fff'} size={45}></Icon>
             </TouchableOpacity>
           )}
-          <Button title="Seleccionar Imagen" onPress={selectImage} />
-          <Button title="Tomar Foto" onPress={takePhoto} />
         </View>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View style={styles.modalContainer}>
+                <View style={styles.modalContent}>
+                  <Text style={styles.modalTitle}>Seleccionar Método</Text>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.butonImage} onPress={() => handleImage(typePicture.selectImage)}>
+                      <Icon size={20} name="images"></Icon>
+                      <Text>Seleccionar Imagen</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.butonImage} onPress={() => handleImage(typePicture.takePhoto)}>
+                    <Icon size={23} name="camera"></Icon>
+                      <Text>Tomar Foto</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <TouchableOpacity onPress={() => setModalVisible(false)}>
+                    <Text style={styles.closeModal}>Cerrar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+        </Modal>
 
         <Controller
           control={control}
@@ -182,102 +205,32 @@ export const CreateContactScreen: React.FC = () => {
           </Text>
         )}
 
+        <MapView
+          style={styles.map}
+          initialRegion={location}
+          onPress={(event: MapPressEvent) => setLocation({...event.nativeEvent.coordinate, latitudeDelta: 0.01, longitudeDelta: 0.01})}
+          zoomControlEnabled
+          showsPointsOfInterest>
+          <Marker
+            coordinate={location}
+            title="Mi Ubicación"
+            description="Estás aquí!"
+          />
+        </MapView>
+
         <View style={styles.buttonContainer}>
           <Button
             title="Agregar Contacto"
             onPress={handleSubmit(onSubmit)}
             color="#000"
           />
-        </View>
-
-        <View style={styles.cancelButtonContainer}>
           <Button title="Cancelar" onPress={handleCancel} color="#ff4444" />
         </View>
       </View>
-    </ImageBackground>
+    </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    justifyContent: 'flex-start',
-  },
-  container: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'flex-start',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '600',
-    marginBottom: 30,
-    color: '#000',
-    textAlign: 'left',
-  },
-  input: {
-    height: 50,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    backgroundColor: '#fff',
-    fontSize: 16,
-  },
-  roleContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 20,
-  },
-  roleButton: {
-    flex: 1,
-    padding: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    alignItems: 'center',
-    marginHorizontal: 5,
-    backgroundColor: '#f9f9f9',
-  },
-  selectedRole: {
-    backgroundColor: '#e0e0e0',
-  },
-  roleText: {
-    fontSize: 16,
-    color: '#000',
-  },
-  error: {
-    color: 'red',
-    marginBottom: 10,
-    textAlign: 'left',
-  },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: 'flex-end',
-  },
-  cancelButtonContainer: {
-    marginTop: 10,
-    alignItems: 'flex-end',
-  },
-  imageContainer: {
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  imagePreview: {
-    width: 150,
-    height: 150,
-    borderRadius: 100,
-    gap: 10,
-    backgroundColor: '#ccc',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  imagePlaceholder: {
-    color: '#888',
-    marginBottom: 10,
-  },
-});
+
 
 export default CreateContactScreen;

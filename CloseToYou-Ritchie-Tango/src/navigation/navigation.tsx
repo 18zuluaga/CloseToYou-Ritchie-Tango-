@@ -8,11 +8,11 @@ import {TouchableOpacity} from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { Contact } from '../interface/contact.interface';
 
-export type RootStackParamList = {
-  Home: undefined;
-  CreateContact: undefined;
-  SingleContact: {contact: Contact};
-};
+    export type RootStackParamList = {
+      Home: undefined;
+      CreateContact: undefined;
+      SingleContact: {contact: Contact};
+    };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 

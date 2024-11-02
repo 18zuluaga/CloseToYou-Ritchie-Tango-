@@ -1,24 +1,23 @@
 import React from 'react';
 import {Text, TouchableWithoutFeedback, View} from 'react-native';
+import { Contact } from '../../../../interface/contact.interface';
 
 interface ContactCardProps {
-  name: string;
-  role: string;
+  item: Contact
   styles: Record<string, any>;
   handle: () => void;
 }
 
 export const ContactCard: React.FC<ContactCardProps> = ({
-  name,
-  role,
+  item,
   styles,
   handle,
 }) => {
   return (
     <TouchableWithoutFeedback onPress={handle}>
       <View style={styles.contacto}>
-        <Text style={styles.contactName}>{name}</Text>
-        <Text style={styles.contactRole}>{role}</Text>
+        <Text style={styles.contactName}>{item.name}</Text>
+        <Text style={styles.contactRole}>{item.role}</Text>
       </View>
     </TouchableWithoutFeedback>
   );
