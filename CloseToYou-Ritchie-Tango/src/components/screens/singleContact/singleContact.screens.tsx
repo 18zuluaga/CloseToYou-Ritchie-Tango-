@@ -6,8 +6,8 @@ import {
   TouchableOpacity,
   Image,
   Modal,
+  ScrollView,
 } from 'react-native';
-import {RootStackParamList} from '../../../navigation/navigation';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
@@ -21,8 +21,9 @@ import {selectImage} from '../../../utilities/selectImage.function';
 import {typePicture} from '../../../utilities/enum/typePicture.enum';
 import {takePhoto} from '../../../utilities/takePhoto.function';
 import IconE from 'react-native-vector-icons/Entypo';
-import { IWeather } from '../../../interface/weather.interface';
-import { useSingleContact } from './hook/useSingleContact';
+import {IWeather} from '../../../interface/weather.interface';
+import {useSingleContact} from './hook/useSingleContact';
+import {RootStackParamList} from '../../../navigation/app.container.navigation';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'SingleContact'>;
 
@@ -32,19 +33,20 @@ export const SingleContactScreen: React.FC<Props> = ({route}) => {
   const {deleteContact, updateContact, loadContacts, contactById} =
     useContacts();
   const [location, setLocation] = useState<Region>(contact.address);
-  const {getWeather } = useSingleContact();
+  const {getWeather} = useSingleContact();
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [imageUri, setImageUri] = useState<string | undefined>(contact.image);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] =
     useState<boolean>(false);
   const [weather, setWeather] = useState<IWeather>();
 
-  useEffect( () => {
-        const weatherResp = async () => {
-          const weatherRespo = await getWeather(location);
-          setWeather(weatherRespo);
-        };
-        weatherResp();
+  useEffect(() => {
+    console.log('a');
+    const weatherResp = async () => {
+      const weatherRespo = await getWeather(location);
+      setWeather(weatherRespo);
+    };
+    weatherResp();
   }, [location, getWeather]);
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
@@ -98,9 +100,39 @@ export const SingleContactScreen: React.FC<Props> = ({route}) => {
   }, [contact, reset]);
 
   return (
-    <>
+    <ScrollView style={{flex: 1, backgroundColor: 'white'}}>
       <LinearGradient colors={['#9b9b95', '#94969c']} style={{flex: 1}}>
         <View style={styles.header}>
+            {edit ? <View style={styles.containerButton}>
+            <TouchableOpacity onPress={toggleEdit}>
+              <Icon name="close" color={'#fff'} size={25}></Icon>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleSubmit(data => {
+                updateContact({
+                  ...data,
+                  id: contact.id,
+                  address: location,
+                  image: imageUri,
+                });
+                toggleEdit();
+                loadContacts();
+                const newContact = contactById(contact.id);
+                if (newContact) {
+                  navigation.navigate('SingleContact', {
+                    contact: newContact,
+                  });
+                } else {
+                  navigation.navigate('Home');
+                }
+              })}>
+              <IconE name="check" color={'#fff'} size={25}></IconE>
+            </TouchableOpacity>
+          </View> : <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.arrowLeft}>
+              <Icon name="arrow-back-sharp" size={25} color={'#fff'} />
+            </TouchableOpacity>}
           <View style={styles.firstLetterContainer}>
             {edit ? (
               <TouchableOpacity onPress={() => setModalVisible(true)}>
@@ -136,12 +168,16 @@ export const SingleContactScreen: React.FC<Props> = ({route}) => {
                 <View style={styles.modalContent}>
                   <Text style={styles.modalTitle}>Seleccionar Método</Text>
                   <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.butonImage} onPress={() => handleImage(typePicture.selectImage)}>
+                    <TouchableOpacity
+                      style={styles.butonImage}
+                      onPress={() => handleImage(typePicture.selectImage)}>
                       <Icon size={20} name="images"></Icon>
                       <Text>Seleccionar Imagen</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.butonImage} onPress={() => handleImage(typePicture.takePhoto)}>
-                    <Icon size={23} name="camera"></Icon>
+                    <TouchableOpacity
+                      style={styles.butonImage}
+                      onPress={() => handleImage(typePicture.takePhoto)}>
+                      <Icon size={23} name="camera"></Icon>
                       <Text>Tomar Foto</Text>
                     </TouchableOpacity>
                   </View>
@@ -190,7 +226,9 @@ export const SingleContactScreen: React.FC<Props> = ({route}) => {
         onRequestClose={() => setConfirmDeleteModalVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>¿Estás seguro que quieres eliminar a "{contact.name}"?</Text>
+            <Text style={styles.modalTitle}>
+              ¿Estás seguro que quieres eliminar a "{contact.name}"?
+            </Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={styles.confirmButton}
@@ -317,51 +355,29 @@ export const SingleContactScreen: React.FC<Props> = ({route}) => {
           </Text>
         )}
 
-        <MapView
-          style={styles.map}
-          initialRegion={location}
-          zoomControlEnabled
-          onPress={(event: MapPressEvent) => onMapPress(event)}
-          showsPointsOfInterest>
-          <Marker coordinate={location} />
-        </MapView>
-
-        <Text>{weather?.main.temp}</Text>
-
-        {edit && (
-          <View style={styles.containerButton}>
-            <TouchableOpacity
-              style={styles.buttonSave}
-              onPress={handleSubmit(data => {
-                updateContact({
-                  ...data,
-                  id: contact.id,
-                  address: location,
-                  image: imageUri,
-                });
-                toggleEdit();
-                loadContacts();
-                const newContact = contactById(contact.id);
-                console.log(newContact);
-                if (newContact) {
-                  console.log('Contact');
-                  navigation.navigate('SingleContact', {contact: newContact});
-                } else {
-                  navigation.navigate('Home');
-                }
-              })}>
-              <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 18}}>
-                Guardar
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.buttonCancel} onPress={toggleEdit}>
-              <Text style={{color: '#fff', fontWeight: 'bold', fontSize: 18}}>
-                Cancelar
-              </Text>
-            </TouchableOpacity>
+        <View style={styles.containerLocationInfo}>
+          <View style={styles.weatherInfo}>
+            <Image
+              style={{height: 70, width: 70}}
+              source={{
+                uri: `https://openweathermap.org/img/wn/${weather?.weather[0].icon}@2x.png`,
+              }}
+            />
+            <View style={styles.weatherInfoMain}>
+              <Text style={{fontSize: 20}}>{weather?.main.temp}°</Text>
+              <Text>{weather?.weather[0].main}</Text>
+            </View>
           </View>
-        )}
+          <MapView
+            style={styles.map}
+            initialRegion={location}
+            zoomControlEnabled
+            onPress={(event: MapPressEvent) => onMapPress(event)}
+            showsPointsOfInterest>
+            <Marker coordinate={location} />
+          </MapView>
+        </View>
       </View>
-    </>
+    </ScrollView>
   );
 };

@@ -10,11 +10,12 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useHomeScreen } from './hook/useHomeScreen';
 import { ContactCard } from './components/contactCard.component';
-import { RootStackParamList } from '../../../navigation/navigation';
 import { useContacts } from '../../../hook/useContacts';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { useIsFocused } from '@react-navigation/native';
 import { styles } from './css/home';
+import { RootStackParamList } from '../../../navigation/app.container.navigation';
+import usePermission from '../../../hook/usePermission';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -29,6 +30,10 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { showContacts, handleScroll } = useHomeScreen();
   const { handlesearch, groupedContacts, searchQuery, loadContacts} = useContacts();
   const focus = useIsFocused();
+  const { requestPermission } = usePermission();
+  requestPermission('location');
+  requestPermission('camera');
+  requestPermission('contacts');
 
   useEffect(() => {
     if(focus){
@@ -36,7 +41,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
       loadContacts();
     }
   }, [groupedContacts, focus, loadContacts]);
-  // console.log(JSON.stringify(groupedContacts(), null, 2));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,7 +50,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         ) : (
           <TextInput
             placeholder="Buscar contacto"
-            placeholderTextColor="gray"
+            placeholderTextColor="black"
             style={{...styles.searchInput,marginTop: showContacts ? 10 : 0,}}
             onChangeText={handlesearch}
             value={searchQuery}

@@ -113,4 +113,11 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap:10,
   },
+  buttonContainerAccions:{
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    width: '100%',
+    paddingHorizontal: 10,
+  },
 });

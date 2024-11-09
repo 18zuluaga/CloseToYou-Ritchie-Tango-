@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  Button,
   TouchableOpacity,
   Image,
   ScrollView,
@@ -11,15 +10,17 @@ import {
 } from 'react-native';
 import {useForm, Controller} from 'react-hook-form';
 import {NavigationProp, useNavigation} from '@react-navigation/native';
-import {RootStackParamList} from '../../../navigation/navigation';
 import {useContacts} from '../../../hook/useContacts';
 import {Contact} from '../../../interface/contact.interface';
 import Icon from 'react-native-vector-icons/Entypo';
+import IconF from 'react-native-vector-icons/Feather';
+import IconI from 'react-native-vector-icons/Ionicons';
 import MapView, {MapPressEvent, Marker, Region} from 'react-native-maps';
 import { styles } from './css/creteContact.styles';
 import { typePicture } from '../../../utilities/enum/typePicture.enum';
 import { selectImage } from '../../../utilities/selectImage.function';
 import { takePhoto } from '../../../utilities/takePhoto.function';
+import { RootStackParamList } from '../../../navigation/app.container.navigation';
 
 export const CreateContactScreen: React.FC = () => {
   const {
@@ -31,13 +32,12 @@ export const CreateContactScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [imageUri, setImageUri] = useState<string | undefined>();
   const [location, setLocation] = useState<Region>({
-    latitude: 6.221591,
-    longitude: -75.560524,
+    latitude: 6.219574005345421,
+    longitude: -75.5836361669855,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   });
   const [modalVisible, setModalVisible] = useState(false);
-
   const onSubmit = (data: Contact) => {
     addContact({...data, image: imageUri, address: location});
     navigation.navigate('Home');
@@ -218,13 +218,13 @@ export const CreateContactScreen: React.FC = () => {
           />
         </MapView>
 
-        <View style={styles.buttonContainer}>
-          <Button
-            title="Agregar Contacto"
-            onPress={handleSubmit(onSubmit)}
-            color="#000"
-          />
-          <Button title="Cancelar" onPress={handleCancel} color="#ff4444" />
+        <View style={styles.buttonContainerAccions}>
+          <TouchableOpacity onPress={handleCancel}>
+            <IconI name="close" color="#e32424" size={38}></IconI>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+            <IconF name='save' color="#63626c" size={30}></IconF>
+          </TouchableOpacity>
         </View>
       </View>
     </ScrollView>

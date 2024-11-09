@@ -1,11 +1,14 @@
 import React from 'react';
-import { Navigation } from './src/navigation/navigation';
+import { AuthProvider } from './src/hook/context/auth.context';
+import { NavigationCont } from './src/navigation/app.container.navigation';
 
 
 
 const App: React.FC = () => {
   return (
-    <Navigation/>
+    <AuthProvider>
+      <NavigationCont/>
+    </AuthProvider>
   );
 };
 

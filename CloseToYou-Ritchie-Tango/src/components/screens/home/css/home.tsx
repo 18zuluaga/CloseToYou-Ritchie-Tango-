@@ -28,7 +28,7 @@ export const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 15,
     backgroundColor: Colors.lighter,
-    color: Colors.dark,
+    color: 'black',
     width: '90%',
   },
   contacto: {
