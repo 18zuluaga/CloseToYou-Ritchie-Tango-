@@ -1,12 +1,14 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useEffect, useState, useCallback} from 'react';
-import {defaultContacts} from '../utilities/const/contacts.const';
-import {Contact} from '../interface/contact.interface';
+import {useEffect, useState, useCallback, useContext} from 'react';
+import {ContactService} from '../service/contact/contact.service';
+import {IGroupedContactSection} from '../interface/section.interface';
+import {IContact} from '../interface/contact.interface';
+import {getErrorMessageAndColor} from '../utilities/getErrorMessageAndColor.function';
+import {GlobalContext} from './context/Global.context';
 
 export const useContacts = () => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [contacts, setContacts] = useState<IGroupedContactSection[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredContacts, setFilteredContacts] = useState<Contact[]>(contacts);
+  const {setSnackbar} = useContext(GlobalContext)!;
   const [debounceTimeout, setDebounceTimeout] = useState<NodeJS.Timeout | null>(
     null,
   );
@@ -18,83 +20,118 @@ export const useContacts = () => {
     }
 
     const timeout = setTimeout(() => {
-      const filtered = contacts.filter(contact =>
-        contact.name.toLowerCase().startsWith(name.toLowerCase()),
-      );
-      setFilteredContacts(filtered);
+      loadContacts(name);
     }, 300);
 
     setDebounceTimeout(timeout);
   };
 
-  const loadContacts = useCallback(async () => {
-    const contactsStorage = await AsyncStorage.getItem('contacts');
-    const contIdStorage = await AsyncStorage.getItem('contId');
-    if (contactsStorage && contIdStorage) {
-      const parsedContacts = JSON.parse(contactsStorage);
-      setContacts(parsedContacts);
-      setFilteredContacts(parsedContacts);
-    } else {
-      await AsyncStorage.setItem('contacts', JSON.stringify(defaultContacts));
-      await AsyncStorage.setItem(
-        'contId',
-        JSON.stringify(defaultContacts.length + 1),
-      );
-      setContacts(defaultContacts);
-      setFilteredContacts(defaultContacts);
+  const loadContacts = useCallback(async (name: string | undefined) => {
+    try {
+      const contactosAxios = await ContactService.getAll(name);
+      setContacts(contactosAxios);
+    } catch (err) {
+      console.error('Error fetching contacts', err);
     }
   }, []);
 
   const deleteContact = async (id: number) => {
-    const updatedContacts = contacts.filter(contact => contact.id !== id);
-    setContacts(updatedContacts);
-    setFilteredContacts(updatedContacts);
-    await AsyncStorage.setItem('contacts', JSON.stringify(updatedContacts));
-  };
+    try {
+      const deleteContacts = await ContactService.delete(id.toString());
+      if (deleteContacts) {
+        setSnackbar({
+          message: `Contacto fue exitosamente eliminado`,
+          color: '#77dd77',
+        });
+        loadContacts(undefined);
+      }
+      return deleteContacts;
+    } catch (err: any) {
+      const {message, color} = getErrorMessageAndColor(err.response.status);
 
-  const updateContact = async (contactReq: Contact) => {
-    const updatedContacts = contacts.filter(
-      contact => contact.id !== contactReq.id,
-    );
-    updatedContacts.push(contactReq);
-    setContacts(updatedContacts);
-    setFilteredContacts(updatedContacts);
-    await AsyncStorage.setItem('contacts', JSON.stringify(updatedContacts));
-  };
-
-  const addContact = async (contact: Contact) => {
-    const contIdStorage = await AsyncStorage.getItem('contId');
-    if (contIdStorage) {
-      const contId = +JSON.parse(contIdStorage) + 1;
-      const updatedContacts = [...contacts, {...contact, id: contId}];
-      setContacts(updatedContacts);
-      setFilteredContacts(updatedContacts);
-      await AsyncStorage.setItem('contacts', JSON.stringify(updatedContacts));
-      await AsyncStorage.setItem('contId', JSON.stringify(contId));
+      setSnackbar({
+        message,
+        color,
+      });
     }
   };
 
-  const groupedContacts = () => {
-    const sections = filteredContacts.reduce((acc, contact) => {
-      const firstLetter = contact.name[0].toUpperCase();
-      const section = acc.find(sec => sec.title === firstLetter);
-      if (section) {
-        section.data.push(contact);
-      } else {
-        acc.push({title: firstLetter, data: [contact]});
+  const updateContact = async (contact: IContact) => {
+    try {
+      const address = JSON.stringify(contact.address);
+      const formData = new FormData();
+      formData.append('name', contact.name);
+      formData.append('email', contact.email);
+      formData.append('role', contact.role.toString());
+      formData.append('phone', contact.phone);
+      formData.append('address', address);
+      if (contact.image) {
+        formData.append('file', {
+          uri: contact.image,
+          name: `${contact.name}-image.jpg`,
+          type: 'image/jpg',
+        });
       }
-      return acc;
-    }, [] as {title: string; data: typeof contacts}[]);
-    return sections.sort((a, b) => a.title.localeCompare(b.title));
+      const updateContacts = await ContactService.update(
+        formData,
+        contact.id.toString(),
+      );
+      if (updateContacts) {
+        setSnackbar({
+          message: `${contact.name} fue exitosamente actualizado`,
+          color: '#77dd77',
+        });
+      }
+      return updateContacts;
+    } catch (err: any) {
+      const {message, color} = getErrorMessageAndColor(err.response.status);
+
+      setSnackbar({
+        message,
+        color,
+      });
+    }
   };
 
-  const contactById = (id: number) => {
-    return contacts.find(contact => contact.id === id);
+  const addContact = async (contact: IContact) => {
+    try {
+      const address = JSON.stringify(contact.address);
+      const formData = new FormData();
+      formData.append('name', contact.name);
+      formData.append('email', contact.email);
+      formData.append('role', contact.role.toString());
+      formData.append('phone', contact.phone);
+      formData.append('address', address);
+      if (contact.image) {
+        formData.append('file', {
+          uri: contact.image,
+          name: `${contact.name}-image.jpg`,
+          type: 'image/jpg',
+        });
+      }
+
+      const newcontact = await ContactService.create(formData);
+      if (newcontact) {
+        setSnackbar({
+          message: `${newcontact.name} fue exitosamente guardado`,
+          color: '#77dd77',
+        });
+      }
+      return newcontact;
+    } catch (err: any) {
+      const {message, color} = getErrorMessageAndColor(err.response.status);
+
+      setSnackbar({
+        message,
+        color,
+      });
+    }
   };
 
-  useEffect(() => {
-    loadContacts();
-  }, [loadContacts]);
+  const contactById = async (id: number) => {
+    return await ContactService.getById(id.toString());
+  };
+
 
   useEffect(() => {
     return () => {
@@ -105,8 +142,7 @@ export const useContacts = () => {
   }, [debounceTimeout]);
 
   return {
-    contacts: filteredContacts,
-    groupedContacts,
+    contacts,
     setContacts,
     addContact,
     handlesearch,

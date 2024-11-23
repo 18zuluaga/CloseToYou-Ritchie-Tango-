@@ -1,14 +1,18 @@
 import React from 'react';
-import { AuthProvider } from './src/hook/context/auth.context';
 import { NavigationCont } from './src/navigation/app.container.navigation';
-
+import { SnackbarComponent } from './src/components/common/snackbar.component';
+import { GlobalProvider } from './src/hook/context/Global.context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <NavigationCont/>
-    </AuthProvider>
+    <SafeAreaProvider>
+      <GlobalProvider>
+        <NavigationCont />
+        <SnackbarComponent />
+      </GlobalProvider>
+    </SafeAreaProvider>
   );
 };
 

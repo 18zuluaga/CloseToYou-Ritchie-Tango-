@@ -1,10 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View, TextInput, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
-import { IUser } from '../../../interface/user.interface';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { AuthContext } from '../../../hook/context/auth.context';
 import { RootStackParamList } from '../../../navigation/app.container.navigation';
+import { IRegister } from '../../../interface/register.interface';
+import { useRegister } from './useRegisterScreen';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -16,12 +16,15 @@ interface Props {
 }
 
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm<IUser>();
-  const { saveToken } = useContext(AuthContext)!;
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<IRegister>();
+  const {register} = useRegister();
 
-  const onSubmit = (data: IUser) => {
-    saveToken(data.email);
-    navigation.replace('Home');
+  const onSubmit = async (data: IRegister) => {
+    const token = await register(data);
+    if (typeof token === 'string') {
+      navigation.replace('Home');
+    }
+    reset();
   };
 
   return (

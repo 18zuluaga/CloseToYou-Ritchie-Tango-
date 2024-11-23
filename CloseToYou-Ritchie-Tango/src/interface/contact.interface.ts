@@ -1,12 +1,12 @@
 import { Region } from 'react-native-maps';
 import {role} from '../utilities/enum/role.enum';
 
-export interface Contact {
+export interface IContact {
   id: number;
   name: string;
   email: string;
   role: role;
-  number: number;
+  phone: number;
   image?: string;
   address: Region;
 }

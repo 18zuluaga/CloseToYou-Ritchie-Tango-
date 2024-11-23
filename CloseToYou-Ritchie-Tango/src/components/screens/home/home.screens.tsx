@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   SafeAreaView,
   SectionList,
   Text,
@@ -16,6 +17,9 @@ import { useIsFocused } from '@react-navigation/native';
 import { styles } from './css/home';
 import { RootStackParamList } from '../../../navigation/app.container.navigation';
 import usePermission from '../../../hook/usePermission';
+import { RESULTS } from 'react-native-permissions';
+import { IPermission } from '../../../interface/permission.interface';
+import Contacts from 'react-native-contacts'; // Importa react-native-contacts
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -28,19 +32,66 @@ interface Props {
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const { showContacts, handleScroll } = useHomeScreen();
-  const { handlesearch, groupedContacts, searchQuery, loadContacts} = useContacts();
+  const { handlesearch, contacts, searchQuery, loadContacts } =
+    useContacts();
   const focus = useIsFocused();
-  const { requestPermission } = usePermission();
+  const { requestPermission, checkPermission } = usePermission();
+  const [permissionStatus, setPermissionStatus] = useState<IPermission>({
+    camera: 'unavailable',
+    location: 'unavailable',
+    contacts: 'unavailable',
+  });
+
+  useEffect(() => {
+    const checkPermissions = async () => {
+      const cameraPermission = await checkPermission('camera');
+      const locationPermission = await checkPermission('location');
+      const contactsPermission = await checkPermission('contacts');
+
+      setPermissionStatus({
+        camera: cameraPermission || 'denied',
+        location: locationPermission || 'denied',
+        contacts: contactsPermission || 'denied',
+      });
+    };
+
+    checkPermissions();
+  }, [checkPermission]);
+  
   requestPermission('location');
   requestPermission('camera');
   requestPermission('contacts');
 
   useEffect(() => {
-    if(focus){
-      groupedContacts();
-      loadContacts();
+    if (focus) {
+      loadContacts(undefined);
     }
-  }, [groupedContacts, focus, loadContacts]);
+  }, [focus, loadContacts]);
+
+  useEffect(() => {
+    if (permissionStatus.contacts === RESULTS.GRANTED) {
+      Contacts.getAll()
+        .then((deviceContacts) => {
+          console.log(deviceContacts);
+        })
+        .catch((error) => {
+          console.log('Error al obtener los contactos:', error);
+        });
+    }
+  }, [permissionStatus.contacts]);
+
+  if (
+    permissionStatus.camera === RESULTS.UNAVAILABLE ||
+    permissionStatus.contacts === RESULTS.UNAVAILABLE ||
+    permissionStatus.location === RESULTS.UNAVAILABLE
+  ) {
+    return (
+      <View style={{ margin: 'auto' }}>
+        <ActivityIndicator size={'large'} color={'#63626c'} />
+        <Text style={{ textAlign: 'center' }}>Cargando...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -51,7 +102,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
           <TextInput
             placeholder="Buscar contacto"
             placeholderTextColor="black"
-            style={{...styles.searchInput,marginTop: showContacts ? 10 : 0,}}
+            style={{ ...styles.searchInput, marginTop: showContacts ? 10 : 0 }}
             onChangeText={handlesearch}
             value={searchQuery}
           />
@@ -63,30 +114,33 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
       {showContacts && (
         <TextInput
           placeholder="Buscar contacto"
-          style={{...styles.searchInput,marginTop: showContacts ? 10 : 0,}}
+          placeholderTextColor="black"
+          style={{ ...styles.searchInput, marginTop: showContacts ? 10 : 0 }}
           onChangeText={handlesearch}
           value={searchQuery}
         />
       )}
-      <SectionList
-        sections={groupedContacts()}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <ContactCard
-            item={item}
-            styles={styles}
-            handle={() => navigation.navigate('SingleContact', { contact: item })}
-          />
-        )}
-        renderSectionHeader={({ section: { title } }) => (
-          <Text style={styles.contactTitle}>
-            {title}
-          </Text>
-        )}
-        contentInsetAdjustmentBehavior="automatic"
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-      />
+      {contacts[0] ? (
+        <SectionList
+          sections={contacts}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <ContactCard
+              item={item}
+              styles={styles}
+              handle={() => navigation.navigate('SingleContact', { contact: item })}
+            />
+          )}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.contactTitle}>{title}</Text>
+          )}
+          contentInsetAdjustmentBehavior="automatic"
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        />
+      ) : (
+        <Text style={styles.NotFoundText}>No se han encontrado contactos.</Text>
+      )}
     </SafeAreaView>
   );
 };

@@ -1,19 +1,19 @@
 import React, {useContext} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
-import {Contact} from '../interface/contact.interface';
+import {IContact} from '../interface/contact.interface';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {HomeScreen} from '../components/screens/home/home.screens';
 import {SingleContactScreen} from '../components/screens/singleContact/singleContact.screens';
 import CreateContactScreen from '../components/screens/createContact/createContact.screens';
 import LoginScreen from '../components/screens/login/login.screens';
-import {AuthContext} from '../hook/context/auth.context';
+import {GlobalContext} from '../hook/context/Global.context';
 import OnboardingScreen from '../components/screens/ onboarding/onboarding.screen';
 import RegisterScreen from '../components/screens/register/register.screens';
 
 export type RootStackParamList = {
   Home: undefined;
   CreateContact: undefined;
-  SingleContact: {contact: Contact};
+  SingleContact: {contact: IContact};
   Onboarding: undefined;
   Login: undefined;
   Register: undefined;
@@ -22,7 +22,7 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator();
 
 export const NavigationCont: React.FC = () => {
-  const {token, isLoading} = useContext(AuthContext)!;
+  const {token, isLoading} = useContext(GlobalContext)!;
 
   if (isLoading) {
     return null;

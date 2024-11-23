@@ -27,8 +27,6 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 25,
     paddingHorizontal: 15,
-    backgroundColor: Colors.lighter,
-    color: 'black',
     width: '90%',
   },
   contacto: {
@@ -62,5 +60,11 @@ export const styles = StyleSheet.create({
   },
   contentContainer: {
     marginTop: 10,
+  },
+  NotFoundText: {
+    margin: 'auto',
+    fontSize: 18,
+    textAlign: 'center',
+    color: 'black',
   },
 });
