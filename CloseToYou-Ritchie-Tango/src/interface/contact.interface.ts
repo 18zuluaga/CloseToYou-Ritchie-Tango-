@@ -6,7 +6,7 @@ export interface IContact {
   name: string;
   email: string;
   role: role;
-  phone: number;
+  phone: string;
   image?: string;
   address: Region;
 }

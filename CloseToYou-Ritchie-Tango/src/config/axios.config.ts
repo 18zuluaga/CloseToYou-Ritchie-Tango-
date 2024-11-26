@@ -9,7 +9,7 @@ export const axiosWeather: AxiosInstance = axios.create({
 });
 
 export const axiosBackend: AxiosInstance = axios.create({
-  baseURL: 'closetoyou-ritchie-tango-backend-production.up.railway.app',
+  baseURL: 'https://closetoyou-ritchie-tango-backend-production.up.railway.app',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -17,9 +17,10 @@ export const axiosBackend: AxiosInstance = axios.create({
 });
 
 export const axiosBackendMultipart: AxiosInstance = axios.create({
-  baseURL: 'closetoyou-ritchie-tango-backend-production.up.railway.app',
+  baseURL: 'https://closetoyou-ritchie-tango-backend-production.up.railway.app',
   timeout: 10000,
   headers: {
     'Content-Type': 'multipart/form-data',
   },
 });
+

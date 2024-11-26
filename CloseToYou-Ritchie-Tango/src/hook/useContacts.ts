@@ -13,6 +13,36 @@ export const useContacts = () => {
     null,
   );
 
+  const syncronize = async (deviceContacts: IContact[]): Promise<boolean> => {
+    try {
+      for (let deviceContact of deviceContacts) {
+        const result = await addContact(deviceContact);
+        if (!result) {
+          setSnackbar({
+            message: `Error al agregar el contacto: ${deviceContact.name}`,
+            color: '#FF6B6B',
+          });
+          return false;
+        }
+      }
+
+      // Si todos los contactos fueron agregados correctamente
+      setSnackbar({
+        message: 'Todos los contactos fueron sincronizados correctamente',
+        color: '#77dd77',
+      });
+
+      return true;
+    } catch (err) {
+      console.error('Error sincronizando los contactos:', err);
+      setSnackbar({
+        message: 'Hubo un error al sincronizar los contactos',
+        color: '#FF6B6B',
+      });
+      return false;
+    }
+  };
+
   const handlesearch = (name: string) => {
     setSearchQuery(name);
     if (debounceTimeout) {
@@ -95,6 +125,7 @@ export const useContacts = () => {
 
   const addContact = async (contact: IContact) => {
     try {
+      console.log(contact);
       const address = JSON.stringify(contact.address);
       const formData = new FormData();
       formData.append('name', contact.name);
@@ -151,5 +182,6 @@ export const useContacts = () => {
     deleteContact,
     updateContact,
     contactById,
+    syncronize,
   };
 };

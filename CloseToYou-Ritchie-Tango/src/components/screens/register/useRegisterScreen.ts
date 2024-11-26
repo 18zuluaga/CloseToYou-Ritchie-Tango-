@@ -26,7 +26,8 @@ export const useRegister = () => {
       }
       return token;
     } catch (err: any) {
-      const {message, color} = getErrorMessageAndColor(err.response.status);
+      console.log(err.response);
+      const {message, color} = getErrorMessageAndColor(err.response);
 
       setSnackbar({
         message,
